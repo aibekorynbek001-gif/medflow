@@ -56,14 +56,6 @@ function setOptions(select, label, rows, format = row => row.name) {
   select.replaceChildren(new Option(label, ''), ...rows.map(row => new Option(format(row), row.id)));
 }
 
-async function loadClinics() {
-  const clinics = await get(supabase.from('clinics').select('id,name').order('name'));
-  const select = $('.clinic-select');
-  setOptions(select, clinics.length ? 'Выберите клинику' : 'Каталог пуст', clinics);
-  select.disabled = !clinics.length;
-  if (!clinics.length) throw new Error('В базе ещё нет каталога клиник.');
-}
-
 async function loadAccount(user) {
   const [profile, access] = await Promise.all([
     get(supabase.from('profiles').select('id,name,clinic_id,clinic:clinics(name)').eq('id', user.id).maybeSingle()),
@@ -252,7 +244,6 @@ async function initialise() {
     if (!config.url || !config.key) throw new Error('Подключение к облачной базе ещё настраивается.');
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/+esm');
     supabase = createClient(config.url, config.key);
-    await loadClinics();
   } catch (error) {
     feedback(location.protocol === 'file:' ? 'Откройте MedFlow по ссылке GitHub Pages.' : failure(error), '#setupMessage');
     return;
@@ -264,11 +255,11 @@ async function initialise() {
   });
   onSubmit('#patientForm', async values => {
     const name = values.name.trim();
-    if (!name || !values.clinic) throw new Error('Укажите имя и выберите клинику.');
+    if (!name) throw new Error('Укажите имя.');
     const data = await get(supabase.auth.signUp({
       email: values.email.trim(),
       password: values.password,
-      options: { data: { name, clinic_id: values.clinic } },
+      options: { data: { name } },
     }));
     if (!data.session) throw new Error('Supabase ожидает подтверждения email. Для демо требуется отключить подтверждение.');
     await showAccount(data.user);

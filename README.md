@@ -10,6 +10,8 @@
 4. В GitHub откройте Settings → Secrets and variables → Actions → Variables. Добавьте SUPABASE_URL и SUPABASE_PUBLISHABLE_KEY из проекта MedFlow. Публичный ключ начинается с sb_publishable_. Административные ключи и пароль базы следует хранить только в Supabase.
 5. В Settings → Pages выберите GitHub Actions как источник. Запустите Publish MedFlow из вкладки Actions после добавления переменных.
 
+При регистрации MedFlow автоматически выбирает поликлинику № 1 города Семей для демонстрации.
+
 Для тестовой регистрации используйте новый адрес на example.com. Для такого адреса сброс пароля по почте недоступен.
 
 ## Кабинет врача

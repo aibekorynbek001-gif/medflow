@@ -57,7 +57,7 @@ create unique index appointments_active_slot
   on public.appointments (doctor_id, visit_date, visit_time)
   where status <> 'Отменена';
 
--- An Auth account becomes a patient only with a valid clinic and display name.
+-- The public demo registers patients in one preset clinic.
 -- Staffing is assigned separately by the project administrator.
 create function public.medflow_new_profile() returns trigger
 language plpgsql security definer set search_path = '' as $$
@@ -65,7 +65,7 @@ begin
   insert into public.profiles (id, clinic_id, name)
   select new.id, c.id, trim(new.raw_user_meta_data ->> 'name')
   from public.clinics c
-  where c.id = new.raw_user_meta_data ->> 'clinic_id'
+  where c.id = 'semey-polyclinic-1'
     and char_length(trim(new.raw_user_meta_data ->> 'name')) between 1 and 100;
   return new;
 end;
